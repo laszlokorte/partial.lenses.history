@@ -1,13 +1,13 @@
-import { isArray, isFunction, arityN, freeze, acyclicEqualsU, curryN, array0, id } from 'infestines';
-import { accept, validate, props, optional, freeFn, args } from 'partial.lenses.validation';
-import { lens } from 'partial.lenses';
+import { freeze, array0, id, curryN, acyclicEqualsU, isFunction, arityN, isArray } from 'infestines';
+import { freeFn, args, validate, accept, props, optional } from 'partial.lenses.validation';
+import { lens as lens$1 } from 'partial.lenses';
 
 var isBoolean = function isBoolean(x) {
   return typeof x === 'boolean';
 };
 
-var fn = function fn(args$$1, res) {
-  return freeFn(args.apply(null, args$$1), res);
+var fn = function fn(args$1, res) {
+  return freeFn(args.apply(null, args$1), res);
 };
 
 var integer = function integer(x) {
@@ -155,6 +155,21 @@ function setPresentU(value, history) {
   return construct$1(j - j0, append(now, slice(j0, j, t)), append(value, slice(j0, j, v)), c);
 }
 
+function setPresentUMut(value, history) {
+  var v = history.v;
+  var i = history.i;
+  var c = history.c;
+  if (c.e) {
+    if (acyclicEqualsU(nth(i, v), value)) {
+      return history;
+    }
+  }
+  var t = history.t;
+  var now = Date.now();
+  var j0 = Math.max(0, i - c.m);
+  return construct$1(i - j0, append(now, slice(j0, i, t)), append(value, slice(j0, i, v)), c);
+}
+
 var setIndexU = function setIndexU(index, history) {
   return construct$1(Math.max(0, Math.min(index, indexMax(history))), history.t, history.v, history.c);
 };
@@ -179,7 +194,7 @@ var count = function count(history) {
   return length(history.v);
 };
 
-var index = /*#__PURE__*/lens(function index(history) {
+var index = /*#__PURE__*/lens$1(function index(history) {
   return history.i;
 }, setIndexU);
 
@@ -189,9 +204,13 @@ var indexMax = function indexMax(history) {
 
 // Present
 
-var present = /*#__PURE__*/lens(function present(history) {
+var present = /*#__PURE__*/lens$1(function present(history) {
   return nth(history.i, history.v);
 }, setPresentU);
+
+var presentMut = /*#__PURE__*/lens$1(function present(history) {
+  return nth(history.i, history.v);
+}, setPresentUMut);
 
 var undoForget = function undoForget(history) {
   return construct$1(0, drop(history.i, history.t), drop(history.i, history.v), history.c);
@@ -199,7 +218,7 @@ var undoForget = function undoForget(history) {
 
 // Redo
 
-var redoIndex = /*#__PURE__*/lens(function redoIndex(history) {
+var redoIndex = /*#__PURE__*/lens$1(function redoIndex(history) {
   return indexMax(history) - history.i;
 }, function (index, history) {
   return setIndexU(indexMax(history) - index, history);
@@ -225,7 +244,7 @@ var history = /*#__PURE__*/props({
   c: /*#__PURE__*/props({ p: integer, e: isBoolean, m: integer })
 });
 
-var lens$1 = function lens$$1(outer, inner) {
+var lens = function lens(outer, inner) {
   return fn([outer, accept, accept, fn([inner, accept], accept)], accept);
 };
 
@@ -239,22 +258,23 @@ var init$1 = /*#__PURE__*/C(init, /*#__PURE__*/fn([/*#__PURE__*/optional( /*#__P
 
 // Present
 
-var present$1 = /*#__PURE__*/C(present, /*#__PURE__*/lens$1(history, accept));
+var present$1 = /*#__PURE__*/C(present, /*#__PURE__*/lens(history, accept));
+var presentMut$1 = /*#__PURE__*/C(presentMut, /*#__PURE__*/lens(history, accept));
 
 // Undo
 
-var undoIndex = /*#__PURE__*/C(index, /*#__PURE__*/lens$1(history, integer));
+var undoIndex = /*#__PURE__*/C(index, /*#__PURE__*/lens(history, integer));
 var undoForget$1 = /*#__PURE__*/C(undoForget, /*#__PURE__*/fn([history], history));
 
 // Redo
 
-var redoIndex$1 = /*#__PURE__*/C(redoIndex, /*#__PURE__*/lens$1(history, integer));
+var redoIndex$1 = /*#__PURE__*/C(redoIndex, /*#__PURE__*/lens(history, integer));
 var redoForget$1 = /*#__PURE__*/C(redoForget, /*#__PURE__*/fn([history], history));
 
 // Time travel
 
 var count$1 = /*#__PURE__*/C(count, /*#__PURE__*/fn([history], integer));
-var index$1 = /*#__PURE__*/C(index, /*#__PURE__*/lens$1(history, integer));
+var index$1 = /*#__PURE__*/C(index, /*#__PURE__*/lens(history, integer));
 var indexMax$1 = /*#__PURE__*/C(indexMax, /*#__PURE__*/fn([history], integer));
 
-export { init$1 as init, present$1 as present, undoIndex, undoForget$1 as undoForget, redoIndex$1 as redoIndex, redoForget$1 as redoForget, count$1 as count, index$1 as index, indexMax$1 as indexMax };
+export { count$1 as count, index$1 as index, indexMax$1 as indexMax, init$1 as init, present$1 as present, presentMut$1 as presentMut, redoForget$1 as redoForget, redoIndex$1 as redoIndex, undoForget$1 as undoForget, undoIndex };

@@ -159,6 +159,21 @@ function setPresentU(value, history) {
   return construct$1(j - j0, append(now, slice(j0, j, t)), append(value, slice(j0, j, v)), c);
 }
 
+function setPresentUMut(value, history) {
+  var v = history.v;
+  var i = history.i;
+  var c = history.c;
+  if (c.e) {
+    if (I.acyclicEqualsU(nth(i, v), value)) {
+      return history;
+    }
+  }
+  var t = history.t;
+  var now = Date.now();
+  var j0 = Math.max(0, i - c.m);
+  return construct$1(i - j0, append(now, slice(j0, i, t)), append(value, slice(j0, i, v)), c);
+}
+
 var setIndexU = function setIndexU(index, history) {
   return construct$1(Math.max(0, Math.min(index, indexMax(history))), history.t, history.v, history.c);
 };
@@ -196,6 +211,10 @@ var indexMax = function indexMax(history) {
 var present = /*#__PURE__*/L.lens(function present(history) {
   return nth(history.i, history.v);
 }, setPresentU);
+
+var presentMut = /*#__PURE__*/L.lens(function present(history) {
+  return nth(history.i, history.v);
+}, setPresentUMut);
 
 var undoForget = function undoForget(history) {
   return construct$1(0, drop(history.i, history.t), drop(history.i, history.v), history.c);
@@ -244,6 +263,7 @@ var init$1 = /*#__PURE__*/C(init, /*#__PURE__*/fn([/*#__PURE__*/V.optional( /*#_
 // Present
 
 var present$1 = /*#__PURE__*/C(present, /*#__PURE__*/lens(history, V.accept));
+var presentMut$1 = /*#__PURE__*/C(presentMut, /*#__PURE__*/lens(history, V.accept));
 
 // Undo
 
@@ -261,12 +281,13 @@ var count$1 = /*#__PURE__*/C(count, /*#__PURE__*/fn([history], integer));
 var index$1 = /*#__PURE__*/C(index, /*#__PURE__*/lens(history, integer));
 var indexMax$1 = /*#__PURE__*/C(indexMax, /*#__PURE__*/fn([history], integer));
 
-exports.init = init$1;
-exports.present = present$1;
-exports.undoIndex = undoIndex;
-exports.undoForget = undoForget$1;
-exports.redoIndex = redoIndex$1;
-exports.redoForget = redoForget$1;
 exports.count = count$1;
 exports.index = index$1;
 exports.indexMax = indexMax$1;
+exports.init = init$1;
+exports.present = present$1;
+exports.presentMut = presentMut$1;
+exports.redoForget = redoForget$1;
+exports.redoIndex = redoIndex$1;
+exports.undoForget = undoForget$1;
+exports.undoIndex = undoIndex;
