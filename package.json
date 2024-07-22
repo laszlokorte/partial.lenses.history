@@ -9,7 +9,7 @@
     "dist": "rollup -c && cp dist/partial.lenses.history.js docs/",
     "docs": "klipse-github-docs-generator",
     "lint": "eslint src test",
-    "prepare": "npm run lint && npm run docs && npm run dist && npm run test",
+    "prepare": "npm run lint && npm run dist && npm run test",
     "report-coverage": "nyc report --reporter=lcov > coverage.lcov && codecov",
     "test": "nyc mocha && nyc report -r html mocha",
     "watch": "concurrently \"npm run watch:dist\" \"npm run watch:docs\" \"npm run watch:test\"",
