@@ -37,6 +37,7 @@ Undo-Redo history.  Basic features:
     * [`H.init({[maxCount, pushEquals, replacePeriod]}, value) ~> history`](#H-init) <small><sup>v0.1.0</sup></small>
   * [Present](#present)
     * [`H.present ~> valueLens`](#H-present) <small><sup>v0.2.0</sup></small>
+    * [`H.presentReplace ~> valueLens`](#H-presentReplace) <small><sup>v1.3.0</sup></small>
   * [Undo](#undo)
     * [`H.undoForget(history) ~> history`](#H-undoForget) <small><sup>v0.1.0</sup></small>
     * [`H.undoIndex ~> numberLens`](#H-undoIndex) <small><sup>v0.2.0</sup></small>
@@ -302,8 +303,8 @@ thru(
 // 0
 ```
 
-Note that modifications through `H.present` are not referentially transparent
-operations, because setting through `H.present` takes a timestamp underneath.
+Note that modifications through `H.presentReplace` are not referentially transparent
+operations, because setting through `H.presentReplace` takes a timestamp underneath.
 
 ### <a id="undo"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses.history/index.html#undo) [Undo](#undo)
 
