@@ -33,7 +33,7 @@ function setPresentU(value, history) {
   )
 }
 
-function setPresentUMut(value, history) {
+function setPresentReplaceU(value, history) {
   const v = history.v
   const i = history.i
   const c = history.c
@@ -89,9 +89,9 @@ export const present = L.lens(function present(history) {
   return S.nth(history.i, history.v)
 }, setPresentU)
 
-export const presentMut = L.lens(function present(history) {
+export const presentReplace = L.lens(function presentReplace(history) {
   return S.nth(history.i, history.v)
-}, setPresentUMut)
+}, setPresentReplaceU)
 
 // Undo
 
