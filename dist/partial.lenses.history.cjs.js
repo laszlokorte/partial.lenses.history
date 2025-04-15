@@ -17,6 +17,9 @@ var fn = function fn(args, res) {
 var integer = function integer(x) {
   return Number.isInteger(x);
 };
+var func = function func(x) {
+  return typeof x === 'function';
+};
 
 var BITS = 4;
 var SINGLE = 1 << BITS;
@@ -181,14 +184,14 @@ var setIndexU = function setIndexU(index, history) {
 // Creating
 
 var init = /*#__PURE__*/I.curryN(2, function init(config) {
-  config = config || 0;
+  config = config || {};
   var c = {
     p: config.replacePeriod || 0,
     e: !config.pushEquals,
     m: Math.max(1, config.maxCount || -1 >>> 1) - 1
   };
   return function (value) {
-    return construct$1(0, of(Date.now()), of(value), c);
+    return construct$1(0, of(config.initialTime ? config.initialTime() : Date.now()), of(value), c);
   };
 });
 
@@ -257,7 +260,8 @@ var lens = function lens(outer, inner) {
 var init$1 = /*#__PURE__*/C(init, /*#__PURE__*/fn([/*#__PURE__*/V.optional( /*#__PURE__*/V.props({
   maxCount: /*#__PURE__*/V.optional(integer),
   pushEquals: /*#__PURE__*/V.optional(isBoolean),
-  replacePeriod: /*#__PURE__*/V.optional(integer)
+  replacePeriod: /*#__PURE__*/V.optional(integer),
+  initialTime: /*#__PURE__*/V.optional(func)
 })), V.accept], history));
 
 // Present
@@ -281,13 +285,13 @@ var count$1 = /*#__PURE__*/C(count, /*#__PURE__*/fn([history], integer));
 var index$1 = /*#__PURE__*/C(index, /*#__PURE__*/lens(history, integer));
 var indexMax$1 = /*#__PURE__*/C(indexMax, /*#__PURE__*/fn([history], integer));
 
-exports.count = count$1;
-exports.index = index$1;
-exports.indexMax = indexMax$1;
 exports.init = init$1;
 exports.present = present$1;
 exports.presentMut = presentMut$1;
-exports.redoForget = redoForget$1;
-exports.redoIndex = redoIndex$1;
-exports.undoForget = undoForget$1;
 exports.undoIndex = undoIndex;
+exports.undoForget = undoForget$1;
+exports.redoIndex = redoIndex$1;
+exports.redoForget = redoForget$1;
+exports.count = count$1;
+exports.index = index$1;
+exports.indexMax = indexMax$1;

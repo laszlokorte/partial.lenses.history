@@ -1,17 +1,20 @@
 import { freeze, array0, id, curryN, acyclicEqualsU, isFunction, arityN, isArray } from 'infestines';
-import { freeFn, args, validate, accept, props, optional } from 'partial.lenses.validation';
-import { lens as lens$1 } from 'partial.lenses';
+import { freeFn, args, validate, props, optional, accept } from 'partial.lenses.validation';
+import { lens } from 'partial.lenses';
 
 var isBoolean = function isBoolean(x) {
   return typeof x === 'boolean';
 };
 
-var fn = function fn(args$1, res) {
-  return freeFn(args.apply(null, args$1), res);
+var fn = function fn(args$$1, res) {
+  return freeFn(args.apply(null, args$$1), res);
 };
 
 var integer = function integer(x) {
   return Number.isInteger(x);
+};
+var func = function func(x) {
+  return typeof x === 'function';
 };
 
 var BITS = 4;
@@ -177,14 +180,14 @@ var setIndexU = function setIndexU(index, history) {
 // Creating
 
 var init = /*#__PURE__*/curryN(2, function init(config) {
-  config = config || 0;
+  config = config || {};
   var c = {
     p: config.replacePeriod || 0,
     e: !config.pushEquals,
     m: Math.max(1, config.maxCount || -1 >>> 1) - 1
   };
   return function (value) {
-    return construct$1(0, of(Date.now()), of(value), c);
+    return construct$1(0, of(config.initialTime ? config.initialTime() : Date.now()), of(value), c);
   };
 });
 
@@ -194,7 +197,7 @@ var count = function count(history) {
   return length(history.v);
 };
 
-var index = /*#__PURE__*/lens$1(function index(history) {
+var index = /*#__PURE__*/lens(function index(history) {
   return history.i;
 }, setIndexU);
 
@@ -204,11 +207,11 @@ var indexMax = function indexMax(history) {
 
 // Present
 
-var present = /*#__PURE__*/lens$1(function present(history) {
+var present = /*#__PURE__*/lens(function present(history) {
   return nth(history.i, history.v);
 }, setPresentU);
 
-var presentMut = /*#__PURE__*/lens$1(function present(history) {
+var presentMut = /*#__PURE__*/lens(function present(history) {
   return nth(history.i, history.v);
 }, setPresentUMut);
 
@@ -218,7 +221,7 @@ var undoForget = function undoForget(history) {
 
 // Redo
 
-var redoIndex = /*#__PURE__*/lens$1(function redoIndex(history) {
+var redoIndex = /*#__PURE__*/lens(function redoIndex(history) {
   return indexMax(history) - history.i;
 }, function (index, history) {
   return setIndexU(indexMax(history) - index, history);
@@ -244,7 +247,7 @@ var history = /*#__PURE__*/props({
   c: /*#__PURE__*/props({ p: integer, e: isBoolean, m: integer })
 });
 
-var lens = function lens(outer, inner) {
+var lens$1 = function lens$$1(outer, inner) {
   return fn([outer, accept, accept, fn([inner, accept], accept)], accept);
 };
 
@@ -253,28 +256,29 @@ var lens = function lens(outer, inner) {
 var init$1 = /*#__PURE__*/C(init, /*#__PURE__*/fn([/*#__PURE__*/optional( /*#__PURE__*/props({
   maxCount: /*#__PURE__*/optional(integer),
   pushEquals: /*#__PURE__*/optional(isBoolean),
-  replacePeriod: /*#__PURE__*/optional(integer)
+  replacePeriod: /*#__PURE__*/optional(integer),
+  initialTime: /*#__PURE__*/optional(func)
 })), accept], history));
 
 // Present
 
-var present$1 = /*#__PURE__*/C(present, /*#__PURE__*/lens(history, accept));
-var presentMut$1 = /*#__PURE__*/C(presentMut, /*#__PURE__*/lens(history, accept));
+var present$1 = /*#__PURE__*/C(present, /*#__PURE__*/lens$1(history, accept));
+var presentMut$1 = /*#__PURE__*/C(presentMut, /*#__PURE__*/lens$1(history, accept));
 
 // Undo
 
-var undoIndex = /*#__PURE__*/C(index, /*#__PURE__*/lens(history, integer));
+var undoIndex = /*#__PURE__*/C(index, /*#__PURE__*/lens$1(history, integer));
 var undoForget$1 = /*#__PURE__*/C(undoForget, /*#__PURE__*/fn([history], history));
 
 // Redo
 
-var redoIndex$1 = /*#__PURE__*/C(redoIndex, /*#__PURE__*/lens(history, integer));
+var redoIndex$1 = /*#__PURE__*/C(redoIndex, /*#__PURE__*/lens$1(history, integer));
 var redoForget$1 = /*#__PURE__*/C(redoForget, /*#__PURE__*/fn([history], history));
 
 // Time travel
 
 var count$1 = /*#__PURE__*/C(count, /*#__PURE__*/fn([history], integer));
-var index$1 = /*#__PURE__*/C(index, /*#__PURE__*/lens(history, integer));
+var index$1 = /*#__PURE__*/C(index, /*#__PURE__*/lens$1(history, integer));
 var indexMax$1 = /*#__PURE__*/C(indexMax, /*#__PURE__*/fn([history], integer));
 
-export { count$1 as count, index$1 as index, indexMax$1 as indexMax, init$1 as init, present$1 as present, presentMut$1 as presentMut, redoForget$1 as redoForget, redoIndex$1 as redoIndex, undoForget$1 as undoForget, undoIndex };
+export { init$1 as init, present$1 as present, presentMut$1 as presentMut, undoIndex, undoForget$1 as undoForget, redoIndex$1 as redoIndex, redoForget$1 as redoForget, count$1 as count, index$1 as index, indexMax$1 as indexMax };

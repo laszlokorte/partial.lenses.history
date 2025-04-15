@@ -2,7 +2,7 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('infestines'), require('partial.lenses.validation'), require('partial.lenses')) :
   typeof define === 'function' && define.amd ? define(['exports', 'infestines', 'partial.lenses.validation', 'partial.lenses'], factory) :
   (global = global || self, factory(global.H = {}, global.I, global.V, global.L));
-}(this, (function (exports, I, V, L) { 'use strict';
+}(this, function (exports, I, V, L) { 'use strict';
 
   var isBoolean = function isBoolean(x) {
     return typeof x === 'boolean';
@@ -14,6 +14,9 @@
 
   var integer = function integer(x) {
     return Number.isInteger(x);
+  };
+  var func = function func(x) {
+    return typeof x === 'function';
   };
 
   var BITS = 4;
@@ -27,7 +30,7 @@
     }return level;
   }
 
-  var construct =  function (l, u, r) {
+  var construct = function (l, u, r) {
     return I.freeze({ l: l, u: u, r: I.freeze(r) });
   };
 
@@ -52,7 +55,7 @@
     return trie.u - trie.l;
   };
 
-  var setRec = /*#__PURE__*/( function (fn) {
+  var setRec = /*#__PURE__*/(function (fn) {
     return function setRec(s, i, v, n) {
       return I.freeze(fn(s, i, v, n));
     };
@@ -73,7 +76,7 @@
     return construct(trie.l, upper + 1, upper >> shift < SINGLE ? setRec(shift, upper, value, root) : [root, setRec(shift, upper, value, '')]);
   }
 
-  var clrLhsRec = /*#__PURE__*/( function (fn) {
+  var clrLhsRec = /*#__PURE__*/(function (fn) {
     return function clrLhsRec(s, i, n) {
       return I.freeze(fn(s, i, n));
     };
@@ -89,7 +92,7 @@
     }return r;
   });
 
-  var clrRhsRec = /*#__PURE__*/( function (fn) {
+  var clrRhsRec = /*#__PURE__*/(function (fn) {
     return function clrRhsRec(s, i, n) {
       return I.freeze(fn(s, i, n));
     };
@@ -131,7 +134,7 @@
 
   //
 
-  var construct$1 =  function (i, t, v, c) {
+  var construct$1 = function (i, t, v, c) {
     return I.freeze({ i: i, t: t, v: v, c: I.freeze(c) });
   };
 
@@ -175,14 +178,14 @@
   // Creating
 
   var init = /*#__PURE__*/I.curryN(2, function init(config) {
-    config = config || 0;
+    config = config || {};
     var c = {
       p: config.replacePeriod || 0,
       e: !config.pushEquals,
       m: Math.max(1, config.maxCount || -1 >>> 1) - 1
     };
     return function (value) {
-      return construct$1(0, of(Date.now()), of(value), c);
+      return construct$1(0, of(config.initialTime ? config.initialTime() : Date.now()), of(value), c);
     };
   });
 
@@ -226,7 +229,7 @@
     return construct$1(history.i, take(history.i + 1, history.t), take(history.i + 1, history.v), history.c);
   };
 
-  var C =  function (x, c) {
+  var C = function (x, c) {
     var v = V.validate(c, x);
     return I.isFunction(x) ? I.arityN(x.length, v) : v;
   };
@@ -249,7 +252,8 @@
   var init$1 = /*#__PURE__*/C(init, /*#__PURE__*/fn([/*#__PURE__*/V.optional( /*#__PURE__*/V.props({
     maxCount: /*#__PURE__*/V.optional(integer),
     pushEquals: /*#__PURE__*/V.optional(isBoolean),
-    replacePeriod: /*#__PURE__*/V.optional(integer)
+    replacePeriod: /*#__PURE__*/V.optional(integer),
+    initialTime: /*#__PURE__*/V.optional(func)
   })), V.accept], history));
 
   // Present
@@ -273,17 +277,17 @@
   var index$1 = /*#__PURE__*/C(index, /*#__PURE__*/lens(history, integer));
   var indexMax$1 = /*#__PURE__*/C(indexMax, /*#__PURE__*/fn([history], integer));
 
-  exports.count = count$1;
-  exports.index = index$1;
-  exports.indexMax = indexMax$1;
   exports.init = init$1;
   exports.present = present$1;
   exports.presentMut = presentMut$1;
-  exports.redoForget = redoForget$1;
-  exports.redoIndex = redoIndex$1;
-  exports.undoForget = undoForget$1;
   exports.undoIndex = undoIndex;
+  exports.undoForget = undoForget$1;
+  exports.redoIndex = redoIndex$1;
+  exports.redoForget = redoForget$1;
+  exports.count = count$1;
+  exports.index = index$1;
+  exports.indexMax = indexMax$1;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
-})));
+}));

@@ -64,13 +64,13 @@ const setIndexU = (index, history) =>
 // Creating
 
 export const init = I.curryN(2, function init(config) {
-  config = config || 0
+  config = config || {}
   const c = {
     p: config.replacePeriod || 0,
     e: !config.pushEquals,
     m: Math.max(1, config.maxCount || -1 >>> 1) - 1
   }
-  return value => construct(0, S.of(Date.now()), S.of(value), c)
+  return value => construct(0, S.of(config.initialTime ? config.initialTime() : Date.now()), S.of(value), c)
 })
 
 // Time travel

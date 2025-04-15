@@ -33,7 +33,8 @@ export const init = C(
         V.props({
           maxCount: V.optional(V.integer),
           pushEquals: V.optional(V.boolean),
-          replacePeriod: V.optional(V.integer)
+          replacePeriod: V.optional(V.integer),
+          initialTime: V.optional(V.func)
         })
       ),
       V.any
