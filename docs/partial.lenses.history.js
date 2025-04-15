@@ -166,7 +166,7 @@
       }
     }
     var t = history.t;
-    var now = Date.now();
+    var now = nth(i, t);
     var j0 = Math.max(0, i - c.m);
     return construct$1(i - j0, append(now, slice(j0, i, t)), append(value, slice(j0, i, v)), c);
   }

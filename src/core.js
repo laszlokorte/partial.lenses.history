@@ -43,7 +43,7 @@ function setPresentUMut(value, history) {
     }
   }
   const t = history.t
-  const now = Date.now()
+  const now = S.nth(i, t)
   const j0 = Math.max(0, i - c.m)
   return construct(
     i - j0,
